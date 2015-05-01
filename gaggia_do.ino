@@ -1,9 +1,9 @@
-#include <PID_v1.h>
 
-
+RTD rtd(RTD_PWM_PIN);
 const int INVALID_TEMP = -274; // °C
 const int TEMP_MEM_SIZE = 10;
 
+Light light(LED_PWM_PIN);
 bool led_on = true;
 bool led_pulse = true;
 
@@ -13,34 +13,35 @@ int tempMemSum = 0;
 int tempMemAvg = 0;
 
 double Setpoint, Input, Output;
-PID myPID(&Input, &Output, &Setpoint, 200, 50, 0, DIRECT);
+PID pidCtrl(&Input, &Output, &Setpoint, 200, 50, 0, DIRECT);
 int WindowSize = 2000;
 unsigned long windowStartTime;
+
 
 void doInit() {
   windowStartTime = millis();
   Setpoint = 90;
-  myPID.SetOutputLimits(0, WindowSize);
-  myPID.SetSampleTime(100);
-  myPID.SetMode(AUTOMATIC);
+  pidCtrl.SetOutputLimits(0, WindowSize);
+  pidCtrl.SetSampleTime(100);
+  pidCtrl.SetMode(AUTOMATIC);
   tempMem[0] = INVALID_TEMP;
 }
 
 void doLedHandling() {
   if (!led_on) {
-    ledOff();
+    light.off();
 
   } else if (led_pulse) {
-    ledPulseStep();
+    light.pulseStep();
 
   } else {
-    ledOn();
+    light.on();
   }
 }
 
 void doReadTemp() {
   // -- calc avg temp
-  int temp = rtdReadTemp();
+  int temp = rtd.readTemp();
   if (tempMem[0] == INVALID_TEMP) {
     // initialize
     for (int i = 0; i < TEMP_MEM_SIZE; i++) {
@@ -61,9 +62,10 @@ void doReadTemp() {
   led_on = true;
 }
 
+
 void doCalcPid() {
   Input = tempMemAvg;
-  myPID.Compute();
+  pidCtrl.Compute();
   if (millis() - windowStartTime > WindowSize)
   {
     windowStartTime += WindowSize;
