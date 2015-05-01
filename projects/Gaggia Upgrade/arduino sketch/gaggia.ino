@@ -1,4 +1,9 @@
-#include "LED13.h"
+#include <PlayingWithFusion_MAX31865.h>
+#include <SPI.h>
+#include <PID_v1.h>
+
+#include "Light.h"
+#include "RTD.h"
 
 const int LED_PWM_PIN = 13;
 const int RELAY_PWM_PIN = 12;
@@ -14,8 +19,6 @@ unsigned long lastPidCalc = 0;
 
 void setup() {
   Serial.begin(115200);
-  ledInit(LED_PWM_PIN);
-  rtdInit(RTD_PWM_PIN);
   doInit();
 }
 
