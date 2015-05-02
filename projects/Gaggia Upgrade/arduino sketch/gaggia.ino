@@ -4,6 +4,7 @@
 
 #include "Light.h"
 #include "RTD.h"
+#include "GaggiaPID.h"
 
 const int LED_PWM_PIN = 13;
 const int RELAY_PWM_PIN = 12;

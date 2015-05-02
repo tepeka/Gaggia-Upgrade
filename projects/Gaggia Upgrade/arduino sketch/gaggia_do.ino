@@ -12,18 +12,15 @@ int tempMemIdx = 0;
 int tempMemSum = 0;
 int tempMemAvg = 0;
 
-double Setpoint, Input, Output;
-PID pidCtrl(&Input, &Output, &Setpoint, 200, 50, 0, DIRECT);
-int WindowSize = 2000;
-unsigned long windowStartTime;
+const int SETPOINT = 90;
+const int WINDOW_SIZE = 2000;
+const int P = 200;
+const int I = 50;
+const int D = 0;
+GaggiaPID pid(SETPOINT, P, I, D, WINDOW_SIZE);
 
 
 void doInit() {
-  windowStartTime = millis();
-  Setpoint = 90;
-  pidCtrl.SetOutputLimits(0, WindowSize);
-  pidCtrl.SetSampleTime(100);
-  pidCtrl.SetMode(AUTOMATIC);
   tempMem[0] = INVALID_TEMP;
 }
 
@@ -56,23 +53,18 @@ void doReadTemp() {
     tempMemAvg = tempMemSum / TEMP_MEM_SIZE;
   }
   // -- set led state depending on temp
-  if (tempMemAvg < Setpoint - 2) led_pulse = true;
-  else if (tempMemAvg > Setpoint + 2) led_pulse = true;
+  if (tempMemAvg < SETPOINT - 2) led_pulse = true;
+  else if (tempMemAvg > SETPOINT + 2) led_pulse = true;
   else led_pulse = false;
   led_on = true;
 }
 
 
 void doCalcPid() {
-  Input = tempMemAvg;
-  pidCtrl.Compute();
-  if (millis() - windowStartTime > WindowSize)
-  {
-    windowStartTime += WindowSize;
-  }
+  bool on = pid.Calculate(tempMemAvg);
   Serial.print(tempMemAvg);
   Serial.print("deg C, relay: ");
-  if (Output < millis() - windowStartTime) {
+  if (on) {
     digitalWrite(RELAY_PWM_PIN, HIGH);
     Serial.println(HIGH);
   } else {
