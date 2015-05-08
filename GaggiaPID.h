@@ -14,6 +14,8 @@ class GaggiaPID {
     GaggiaPID(int setpoint, int p, int i, int d, int windowSize);
     ~GaggiaPID();
     bool Calculate(int temperature);
+    void UpdateSetpoint(int setpoint);
+    int GetSetpoint();
     
   private:
     PID* m_pid;
