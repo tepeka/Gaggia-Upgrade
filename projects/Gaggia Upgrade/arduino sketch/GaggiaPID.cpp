@@ -12,13 +12,21 @@ GaggiaPID::GaggiaPID(int setpoint, int p, int i, int d, int windowSize) {
   m_pid->SetOutputLimits(0, m_windowSize);
   m_pid->SetSampleTime(100);
   m_pid->SetMode(AUTOMATIC);
+  m_pid->SetControllerDirection(REVERSE);
   m_windowStartTime = millis();
 }
 
-GaggiaPID::~GaggiaPID() { 
+GaggiaPID::~GaggiaPID() {
   delete m_pid;
 }
 
+void GaggiaPID::UpdateSetpoint(int setpoint) {
+  m_setpoint = setpoint;
+}
+
+int GaggiaPID::GetSetpoint() {
+  return m_setpoint;
+}
 
 bool GaggiaPID::Calculate(int temperature) {
   m_input = temperature;
@@ -31,5 +39,5 @@ bool GaggiaPID::Calculate(int temperature) {
     return true;
   } else {
     return false;
-  }  
+  }
 }
