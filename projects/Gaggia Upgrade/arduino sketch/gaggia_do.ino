@@ -1,11 +1,14 @@
 #include <PlayingWithFusion_MAX31865.h>
 #include <SPI.h>
 #include <PID_v1.h>
+#include <stdlib.h>
+#include <string.h>
 
 #include "Light.h"
 #include "RTD.h"
 #include "GaggiaPID.h"
 #include "Poti.h"
+// # include "Http.h"
 
 RTD rtd(RTD_PWM_PIN);
 const int INVALID_TEMP = -274; // °C
@@ -29,12 +32,13 @@ const int P = 190;
 const int I = 30;
 const int D = 10;
 GaggiaPID pid(SETPOINT_INIT, P, I, D, WINDOW_SIZE);
-Poti poti(A0, SETPOINT_MIN, SETPOINT_MAX);
+Poti poti(POTI_ANA_PIN, SETPOINT_MIN, SETPOINT_MAX);
 
+//Http http;
 
 void doInit() {
   tempMem[0] = INVALID_TEMP;
-  pinMode(RELAY_PWM_PIN, OUTPUT);
+  pinMode(RELAY_DIG_PIN, OUTPUT);
 }
 
 void doLedHandling() {
@@ -80,10 +84,10 @@ void doCalcPid() {
   Serial.print(tempMemAvg);
   Serial.print("deg C, relay: ");
   if (on) {
-    digitalWrite(RELAY_PWM_PIN, HIGH);
+    digitalWrite(RELAY_DIG_PIN, HIGH);
     Serial.print(HIGH);
   } else {
-    digitalWrite(RELAY_PWM_PIN, LOW);
+    digitalWrite(RELAY_DIG_PIN, LOW);
     Serial.print(LOW);
   }
   Serial.print(", ");
@@ -91,4 +95,10 @@ void doCalcPid() {
   Serial.println();
 }
 
+void doSendHttp() {
+  // String param1 = "BoilerSetpoint=";
+  // String param2 = "BoilerTemp=";  
+  // String params[2] = {param1 + pid.GetSetpoint(), param2 + tempMemAvg};
+  // http.Get("http://joe:8080/CMD", params);
+}
 
