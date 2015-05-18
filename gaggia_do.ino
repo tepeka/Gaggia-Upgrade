@@ -3,12 +3,13 @@
 #include <PID_v1.h>
 #include <stdlib.h>
 #include <string.h>
+#include <Ethernet.h>
 
 #include "Light.h"
 #include "RTD.h"
 #include "GaggiaPID.h"
 #include "Poti.h"
-// # include "Http.h"
+//# include "HttpWrapper.h"
 
 RTD rtd(RTD_PWM_PIN);
 const int INVALID_TEMP = -274; // °C
@@ -34,11 +35,15 @@ const int D = 10;
 GaggiaPID pid(SETPOINT_INIT, P, I, D, WINDOW_SIZE);
 Poti poti(POTI_ANA_PIN, SETPOINT_MIN, SETPOINT_MAX);
 
-//Http http;
+// HttpWrapper http;
+IPAddress ip(192, 168, 70, 56);
+byte mac[] = { 0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED };
+EthernetClient client;
 
 void doInit() {
   tempMem[0] = INVALID_TEMP;
   pinMode(RELAY_DIG_PIN, OUTPUT);
+  Ethernet.begin(mac, ip);
 }
 
 void doLedHandling() {
@@ -96,9 +101,29 @@ void doCalcPid() {
 }
 
 void doSendHttp() {
-  // String param1 = "BoilerSetpoint=";
-  // String param2 = "BoilerTemp=";  
-  // String params[2] = {param1 + pid.GetSetpoint(), param2 + tempMemAvg};
-  // http.Get("http://joe:8080/CMD", params);
+  String path = "/CMD?BoilerSetpoint=" + pid.GetSetpoint();
+  path = path + "&BoilerTemp=";
+  path = path + tempMemAvg;
+  // http.Get("192.168.70.14", path);
+  if (client.connect("192.168.70.14", 8080)) {
+    Serial.println("connected");
+    // Make a HTTP request:
+    client.println("GET " + path + " HTTP/1.1");
+    client.println("Connection: close");
+    client.println();
+  }
+  else {
+    // kf you didn't get a connection to the server:
+    Serial.println("connection failed");
+  }
+  if (client.available()) {
+    char c = client.read();
+    Serial.print(c);
+  }
+  if (!client.connected()) {
+    Serial.println();
+    Serial.println("disconnecting.");
+    client.stop();
+  }
 }
 
