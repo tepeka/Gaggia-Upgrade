@@ -19,12 +19,11 @@ RTD::~RTD() {
 int RTD::readTemp()
 {
   bool error = false;
-  char* msg;
 
   static struct var_max31865 RTD_CH0;
-  double resistance;
+  RTD_CH0.RTD_type = 1;
 
-  RTD_CH0.RTD_type = 1;                         // un-comment for PT100 RTD
+  double resistance;
 
   struct var_max31865 *rtd_ptr;
   rtd_ptr = &RTD_CH0;
@@ -45,35 +44,39 @@ int RTD::readTemp()
     error = true;
     if (0x80 & RTD_CH0.status)
     {
-      msg = "RTD High Threshold Met";  // RTD high threshold fault
+      // RTD high threshold fault
+      if (Serial.available()) Serial.println(F("RTD High Threshold Met"));  
     }
     else if (0x40 & RTD_CH0.status)
     {
-      msg = "RTD Low Threshold Met";   // RTD low threshold fault
+      // RTD low threshold fault
+      if (Serial.available()) Serial.println(F("RTD Low Threshold Met"));  
     }
     else if (0x20 & RTD_CH0.status)
     {
-      msg = "REFin- > 0.85 x Vbias";   // REFin- > 0.85 x Vbias
+      // REFin- > 0.85 x Vbias
+      if (Serial.available()) Serial.println(F("REFin- > 0.85 x Vbias"));  
     }
     else if (0x10 & RTD_CH0.status)
     {
-      msg = "FORCE- open";             // REFin- < 0.85 x Vbias, FORCE- open
+      // REFin- < 0.85 x Vbias, FORCE- open
+      if (Serial.available()) Serial.println(F("FORCE- open"));  
     }
     else if (0x08 & RTD_CH0.status)
     {
-      msg = "FORCE- open";             // RTDin- < 0.85 x Vbias, FORCE- open
+      // RTDin- < 0.85 x Vbias, FORCE- open
+      if (Serial.available()) Serial.println(F("FORCE- open"));  
     }
     else if (0x04 & RTD_CH0.status)
     {
-      msg = "Over/Under voltage fault";  // overvoltage/undervoltage fault
+      // overvoltage/undervoltage fault
+      if (Serial.available()) Serial.println(F("Over/Under voltage fault"));  
     }
     else
     {
-      msg = "Unknown fault, check connection"; // print RTD temperature heading
+      // print RTD temperature heading
+      if (Serial.available()) Serial.println(F("Unknown fault, check connection"));  
     }
-  }  // end of fault handling
-  if (Serial.available() && error) {
-    Serial.write(msg);
   }
   return m_currentTemp;
 }
