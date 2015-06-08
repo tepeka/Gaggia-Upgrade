@@ -25,6 +25,7 @@ void GaggiaPID::UpdateSetpoint(int setpoint) {
 }
 
 int GaggiaPID::GetSetpoint() {
+  String s = F("ein beliebiger string");
   return m_setpoint;
 }
 

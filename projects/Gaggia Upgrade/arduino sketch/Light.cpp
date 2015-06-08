@@ -1,6 +1,8 @@
 #include "Light.h"
 
 
+
+
 Light::Light(int pin) {
   m_pin = pin;
   pinMode(m_pin, OUTPUT);
