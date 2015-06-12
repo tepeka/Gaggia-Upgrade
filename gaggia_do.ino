@@ -4,6 +4,7 @@
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
 #include <Wire.h>
+#include <MemoryFree.h>
 
 #include "Light.h"
 #include "RTD.h"
@@ -103,7 +104,7 @@ void doCalcPid() {
   pid.UpdateSetpoint(setpoint);
   bool on = pid.Calculate(tempMemAvg);
   //Serial.print(tempMemAvg);
-  //Serial.print("deg C, relay: ");
+  //Serial.print(F("deg C, relay: "));
   if (on) {
     digitalWrite(RELAY_DIG_PIN, HIGH);
     //Serial.print(HIGH);
@@ -111,24 +112,29 @@ void doCalcPid() {
     digitalWrite(RELAY_DIG_PIN, LOW);
     //Serial.print(LOW);
   }
-  //Serial.print(", ");
+  //Serial.print(F(", "));
   //Serial.print(setpoint);
   //Serial.println();
+  
   display.clearDisplay();
   display.setTextSize(1);
   display.setTextColor(WHITE);
   display.setCursor(0, 0);
-  display.println("Temperature: " + String(tempMemAvg));
-  display.println("Setpoint:    " + String(setpoint));
+  display.print(F("Temperature: "));
+  display.println(String(tempMemAvg));
+  display.print(F("Setpoint:    "));
+  display.println(String(setpoint));
   if (on) {
-    display.println("Heater:      on");
+    display.println(F("Heater:      on"));
   } else {
-    display.println("Heater:      off");
+    display.println(F("Heater:      off"));
   }
   display.display();
 }
 
 void doSendHttp() {
+  Serial.print(F("freeMemory()="));
+  Serial.println(freeMemory());
   /*
    String path = "/CMD?BoilerSetpoint=" + pid.GetSetpoint();
    path = path + "&BoilerTemp=";
