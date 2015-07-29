@@ -23,9 +23,9 @@
 #define OLED_RESET     6
 
 // -- rtd & temp
-const int PROGMEM INVALID_TEMP = -274; // °C
-const int PROGMEM TEMP_MEM_SIZE = 10;
-const int PROGMEM TEMP_THRESHOLD = 0; // °C
+const int INVALID_TEMP = -274; // °C
+const int TEMP_MEM_SIZE = 10;
+const int TEMP_THRESHOLD = 0; // °C
 RTD rtd(RTD_PWM_PIN);
 int tempMem[TEMP_MEM_SIZE];
 int tempMemIdx = 0;
@@ -38,10 +38,10 @@ bool led_on = true;
 bool led_pulse = true;
 
 // -- pid
-const int PROGMEM SETPOINT_MIN = 90; // °C
-const int PROGMEM SETPOINT_MAX = 110; // °C
-const int PROGMEM SETPOINT_INIT = 100; // °C
-const int PROGMEM WINDOW_SIZE = 2000;
+const int SETPOINT_MIN = 90; // °C
+const int SETPOINT_MAX = 110; // °C
+const int SETPOINT_INIT = 100; // °C
+const int WINDOW_SIZE = 2000;
 const int P = 190;
 const int I = 30;
 const int D = 10;
