@@ -5,7 +5,7 @@ RTD::RTD(int pin) {
 
   SPI.begin();                            // begin SPI
   SPI.setClockDivider(SPI_CLOCK_DIV16);   // SPI speed to SPI_CLOCK_DIV16 (1MHz)
-  SPI.setDataMode(SPI_MODE3);             // MAX31865 works in MODE1 or MODE3
+  SPI.setDataMode(SPI_MODE1);             // MAX31865 works in MODE1 or MODE3
 
   pinMode(pin, OUTPUT);
   m_rtd->MAX31865_config();
