@@ -16,29 +16,31 @@
 #endif
 
 // -- pins
+#define OLED_RESET    -1
 #define POTI_ANA_PIN  A0
-#define LED_PWM_PIN    3
+#define LED2_PWM_PIN   3
 #define RELAY_DIG_PIN  4
-#define RTD_PWM_PIN    6
-#define LED_PWM_PIN2   9
 #define OLED_MOSI      5
-#define OLED_CLK      10
-#define OLED_DC       11
-#define OLED_CS       12
-#define OLED_RESET     0
+#define OLED_CLK       6
+#define OLED_DC        7
+#define OLED_CS        8
+#define LED1_PWM_PIN   9
+#define RTD_SS_PIN    10
+// PIN 11/12/13: SPI (RTD)
+
 
 // -- rtd & temp
 const int INVALID_TEMP = -274; // °C
 const int TEMP_MEM_SIZE = 10;
 const int TEMP_THRESHOLD = 0; // °C
-RTD rtd(RTD_PWM_PIN);
+RTD rtd(RTD_SS_PIN);
 int tempMem[TEMP_MEM_SIZE];
 int tempMemIdx = 0;
 int tempMemSum = 0;
 int tempMemAvg = 0;
 
 // -- led
-Light light(LED_PWM_PIN);
+Light light(LED1_PWM_PIN);
 bool led_on = true;
 bool led_pulse = true;
 
