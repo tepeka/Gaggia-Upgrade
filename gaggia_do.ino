@@ -4,23 +4,28 @@
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
 #include <Wire.h>
-#include <MemoryFree.h>
+// #include <MemoryFree.h>
 
 #include "Light.h"
 #include "RTD.h"
 #include "GaggiaPID.h"
 #include "Poti.h"
 
+#if (SSD1306_LCDHEIGHT != 64)
+#error("Display height incorrect, please fix Adafruit_SSD1306.h!");
+#endif
+
 // -- pins
-#define LED_PWM_PIN   13
-#define RELAY_DIG_PIN 12
-#define RTD_PWM_PIN    9
 #define POTI_ANA_PIN  A0
+#define LED_PWM_PIN    3
+#define RELAY_DIG_PIN  4
+#define RTD_PWM_PIN    6
+#define LED_PWM_PIN2   9
 #define OLED_MOSI      5
 #define OLED_CLK      10
 #define OLED_DC       11
 #define OLED_CS       12
-#define OLED_RESET     6
+#define OLED_RESET     0
 
 // -- rtd & temp
 const int INVALID_TEMP = -274; // °C
@@ -38,9 +43,9 @@ bool led_on = true;
 bool led_pulse = true;
 
 // -- pid
-const int SETPOINT_MIN = 90; // °C
-const int SETPOINT_MAX = 110; // °C
-const int SETPOINT_INIT = 100; // °C
+const int SETPOINT_MIN = 20; // °C
+const int SETPOINT_MAX = 40; // °C
+const int SETPOINT_INIT = 25; // °C
 const int WINDOW_SIZE = 2000;
 const int P = 190;
 const int I = 30;
@@ -103,18 +108,21 @@ void doCalcPid() {
   int setpoint = poti.GetValue();
   pid.UpdateSetpoint(setpoint);
   bool on = pid.Calculate(tempMemAvg);
-  //Serial.print(tempMemAvg);
-  //Serial.print(F("deg C, relay: "));
+  Serial.print(F("temp: "));
+  Serial.print(tempMemAvg);
+  Serial.print(F(", relay: "));
   if (on) {
     digitalWrite(RELAY_DIG_PIN, HIGH);
-    //Serial.print(HIGH);
+    Serial.print(HIGH);
   } else {
     digitalWrite(RELAY_DIG_PIN, LOW);
-    //Serial.print(LOW);
+    Serial.print(LOW);
   }
-  //Serial.print(F(", "));
-  //Serial.print(setpoint);
-  //Serial.println();
+  Serial.print(F(", setpoint: "));
+  Serial.print(setpoint);
+  //Serial.print(F(", freeMemory: "));
+  //Serial.print(freeMemory());
+  Serial.println();
   
   display.clearDisplay();
   display.setTextSize(1);
@@ -133,8 +141,7 @@ void doCalcPid() {
 }
 
 void doSendHttp() {
-  Serial.print(F("freeMemory()="));
-  Serial.println(freeMemory());
+  
   /*
    String path = "/CMD?BoilerSetpoint=" + pid.GetSetpoint();
    path = path + "&BoilerTemp=";
