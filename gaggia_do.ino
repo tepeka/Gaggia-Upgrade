@@ -20,10 +20,10 @@
 #define POTI_ANA_PIN  A0
 #define LED2_PWM_PIN   3
 #define RELAY_DIG_PIN  4
-#define OLED_MOSI      5
-#define OLED_CLK       6
-#define OLED_DC        7
-#define OLED_CS        8
+#define OLED_CLK       5
+#define OLED_MOSI      6
+#define OLED_CS        7
+#define OLED_DC        8
 #define LED1_PWM_PIN   9
 #define RTD_SS_PIN    10
 // PIN 11/12/13: SPI (RTD)
