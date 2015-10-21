@@ -40,13 +40,13 @@ int tempMemSum = 0;
 int tempMemAvg = 0;
 
 // -- led
-Light light(LED1_PWM_PIN);
+Light light(LED2_PWM_PIN);
 bool led_on = true;
 bool led_pulse = true;
 
 // -- pid
-const int SETPOINT_MIN = 20; // °C
-const int SETPOINT_MAX = 40; // °C
+const int SETPOINT_MIN = 90; // °C
+const int SETPOINT_MAX = 120; // °C
 const int SETPOINT_INIT = 25; // °C
 const int WINDOW_SIZE = 2000;
 const int P = 190;
