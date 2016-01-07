@@ -1,6 +1,6 @@
 #include "RTD.h"
 
-RTD::RTD(int pin) {
+RTD::RTD(short pin) {
   m_rtd = new PWFusion_MAX31865_RTD(pin);
 
   SPI.begin();                            // begin SPI
@@ -16,14 +16,12 @@ RTD::~RTD() {
 }
 
 
-int RTD::readTemp()
+short RTD::readTemp()
 {
   bool error = false;
 
   static struct var_max31865 RTD_CH0;
   RTD_CH0.RTD_type = 1;
-
-  double resistance;
 
   struct var_max31865 *rtd_ptr;
   rtd_ptr = &RTD_CH0;
@@ -31,14 +29,9 @@ int RTD::readTemp()
 
   if (0 == RTD_CH0.status)
   {
-    if (1 == RTD_CH0.RTD_type)
-    {
-      // calculate RTD resistance
-      resistance = (double)RTD_CH0.rtd_res_raw * 400 / 32768;
-    }
     // calculate RTD temperature (simple calc, +/- 2 deg C from -100C to 100C)
     m_currentTemp = ((double)RTD_CH0.rtd_res_raw / 32) - 256;
-  }  // end of no-fault handling
+  }
   else
   {
     error = true;

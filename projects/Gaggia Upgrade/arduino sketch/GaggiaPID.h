@@ -11,21 +11,21 @@
 
 class GaggiaPID {
   public:
-    GaggiaPID(int setpoint, int p, int i, int d, int windowSize);
+    GaggiaPID(short setpoint, short p, short i, short d, short windowSize);
     ~GaggiaPID();
-    bool Calculate(int temperature);
-    void UpdateSetpoint(int setpoint);
-    int GetSetpoint();
+    bool Calculate(short temperature);
+    void UpdateSetpoint(short setpoint);
+    short GetSetpoint();
     
   private:
     PID* m_pid;
-    double m_setpoint;
-    double m_input;
-    double m_output;
-    int m_p;
-    int m_i;
-    int m_d;
-    int m_windowSize;
+    short m_setpoint;
+    short m_input;
+    short m_output;
+    short m_p;
+    short m_i;
+    short m_d;
+    short m_windowSize;
     unsigned long m_windowStartTime;
     
 };

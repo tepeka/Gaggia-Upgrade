@@ -4,7 +4,7 @@
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
 #include <Wire.h>
-// #include <MemoryFree.h>
+#include <MemoryFree.h>
 
 #include "Light.h"
 #include "RTD.h"
@@ -18,39 +18,40 @@
 // -- pins
 #define OLED_RESET    -1
 #define POTI_ANA_PIN  A0
-#define LED2_PWM_PIN   3
+#define LED1_PWM_PIN   3
 #define RELAY_DIG_PIN  4
 #define OLED_CLK       5
 #define OLED_MOSI      6
 #define OLED_CS        7
 #define OLED_DC        8
-#define LED1_PWM_PIN   9
+#define LED2_PWM_PIN   9
 #define RTD_SS_PIN    10
 // PIN 11/12/13: SPI (RTD)
 
 
 // -- rtd & temp
-const int INVALID_TEMP = -274; // °C
-const int TEMP_MEM_SIZE = 10;
-const int TEMP_THRESHOLD = 0; // °C
+const short INVALID_TEMP = -274; // °C
+const short TEMP_MEM_SIZE = 10;
+const short TEMP_THRESHOLD = 0; // °C
 RTD rtd(RTD_SS_PIN);
-int tempMem[TEMP_MEM_SIZE];
-int tempMemIdx = 0;
-int tempMemSum = 0;
-int tempMemAvg = 0;
+short tempMem[TEMP_MEM_SIZE];
+short tempMemIdx = 0;
+short tempMemSum = 0;
+short tempMemAvg = 0;
 
 // -- led
-Light light(LED2_PWM_PIN);
+Light light1(LED1_PWM_PIN);
+Light light2(LED2_PWM_PIN);
 bool led_on = true;
 bool led_pulse = true;
 
 // -- pid
-const int SETPOINT_MIN = 90; // °C
-const int SETPOINT_MAX = 120; // °C
-const int SETPOINT_INIT = 25; // °C
+const int SETPOINT_MIN = 95; // °C
+const int SETPOINT_MAX = 125; // °C
+const int SETPOINT_INIT = 110; // °C
 const int WINDOW_SIZE = 2000;
-const int P = 190;
-const int I = 30;
+const int P = 30;
+const int I = 10;
 const int D = 10;
 GaggiaPID pid(SETPOINT_INIT, P, I, D, WINDOW_SIZE);
 
@@ -61,6 +62,7 @@ Poti poti(POTI_ANA_PIN, SETPOINT_MIN, SETPOINT_MAX);
 Adafruit_SSD1306 display(OLED_MOSI, OLED_CLK, OLED_DC, OLED_RESET, OLED_CS);
 
 void doInit() {
+  light1.on();
   tempMem[0] = INVALID_TEMP;
   pinMode(RELAY_DIG_PIN, OUTPUT);
   display.begin(SSD1306_SWITCHCAPVCC);
@@ -73,22 +75,22 @@ void doInit() {
 
 void doLedHandling() {
   if (!led_on) {
-    light.off();
+    light2.off();
 
   } else if (led_pulse) {
-    light.pulseStep();
+    light2.pulseStep();
 
   } else {
-    light.on();
+    light2.on();
   }
 }
 
 void doReadTemp() {
   // -- calc avg temp
-  int temp = rtd.readTemp();
+  short temp = rtd.readTemp();
   if (tempMem[0] == INVALID_TEMP) {
     // initialize
-    for (int i = 0; i < TEMP_MEM_SIZE; i++) {
+    for (short i = 0; i < TEMP_MEM_SIZE; i++) {
       tempMem[i] = tempMemAvg = temp;
       tempMemSum += temp;
     }
@@ -100,32 +102,22 @@ void doReadTemp() {
     tempMemAvg = tempMemSum / TEMP_MEM_SIZE;
   }
   // -- set led state depending on temp
-  if (tempMemAvg < pid.GetSetpoint() - TEMP_THRESHOLD) led_pulse = true;
+  if(SETPOINT_MIN == pid.GetSetpoint()) led_pulse = false;
+  else if (tempMemAvg < pid.GetSetpoint() - TEMP_THRESHOLD) led_pulse = true;
   else if (tempMemAvg > pid.GetSetpoint() + TEMP_THRESHOLD) led_pulse = true;
   else led_pulse = false;
   led_on = true;
 }
 
 void doCalcPid() {
-  int setpoint = poti.GetValue();
+  short setpoint = poti.GetValue();
   pid.UpdateSetpoint(setpoint);
   bool on = pid.Calculate(tempMemAvg);
-  Serial.print(F("temp: "));
-  Serial.print(tempMemAvg);
-  Serial.print(F(", relay: "));
   if (on) {
     digitalWrite(RELAY_DIG_PIN, HIGH);
-    Serial.print(HIGH);
   } else {
     digitalWrite(RELAY_DIG_PIN, LOW);
-    Serial.print(LOW);
   }
-  Serial.print(F(", setpoint: "));
-  Serial.print(setpoint);
-  //Serial.print(F(", freeMemory: "));
-  //Serial.print(freeMemory());
-  Serial.println();
-  
   display.clearDisplay();
   display.setTextSize(1);
   display.setTextColor(WHITE);
@@ -139,35 +131,21 @@ void doCalcPid() {
   } else {
     display.println(F("Heater:      off"));
   }
+  display.print(F("Mem:         "));
+  display.println(String(freeMemory()));
   display.display();
 }
 
 void doSendHttp() {
-  
-  /*
-   String path = "/CMD?BoilerSetpoint=" + pid.GetSetpoint();
-   path = path + "&BoilerTemp=";
-   path = path + tempMemAvg;
-   // http.Get("192.168.70.14", path);
-   if (client.connect("192.168.70.14", 8080)) {
-     Serial.println("connected");
-     // Make a HTTP request:
-     client.println("GET " + path + " HTTP/1.1");
-     client.println("Connection: close");
-     client.println();
-   }
-   else {
-     // kf you didn't get a connection to the server:
-     Serial.println("connection failed");
-   }
-   if (client.available()) {
-     char c = client.read();
-     Serial.print(c);
-   }
-   if (!client.connected()) {
-     Serial.println();
-     Serial.println("disconnecting.");
-     client.stop();
-   }
-  */
+  if (Serial.available()) {
+    short setpoint = poti.GetValue();
+    Serial.print(F("msg0,"));
+    Serial.print(tempMemAvg);
+    Serial.print(F(","));
+    Serial.print(setpoint);
+    Serial.print(F(","));
+    Serial.print(tempMemAvg - setpoint);
+    Serial.println();
+  }
 }
+

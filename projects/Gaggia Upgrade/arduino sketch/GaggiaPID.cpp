@@ -2,7 +2,7 @@
 
 
 
-GaggiaPID::GaggiaPID(int setpoint, int p, int i, int d, int windowSize) {
+GaggiaPID::GaggiaPID(short setpoint, short p, short i, short d, short windowSize) {
   m_setpoint = setpoint;
   m_windowSize = windowSize;
   m_p = p;
@@ -20,16 +20,15 @@ GaggiaPID::~GaggiaPID() {
   delete m_pid;
 }
 
-void GaggiaPID::UpdateSetpoint(int setpoint) {
+void GaggiaPID::UpdateSetpoint(short setpoint) {
   m_setpoint = setpoint;
 }
 
-int GaggiaPID::GetSetpoint() {
-  String s = F("ein beliebiger string");
+short GaggiaPID::GetSetpoint() {
   return m_setpoint;
 }
 
-bool GaggiaPID::Calculate(int temperature) {
+bool GaggiaPID::Calculate(short temperature) {
   m_input = temperature;
   m_pid->Compute();
   if (millis() - m_windowStartTime > m_windowSize)

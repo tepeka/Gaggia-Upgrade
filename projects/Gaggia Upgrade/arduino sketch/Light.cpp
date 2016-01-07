@@ -3,7 +3,7 @@
 
 
 
-Light::Light(int pin) {
+Light::Light(short pin) {
   m_pin = pin;
   pinMode(m_pin, OUTPUT);
 }
@@ -11,11 +11,15 @@ Light::Light(int pin) {
 Light::~Light() { }
 
 void Light::on() {
-  digitalWrite(m_pin, HIGH);
+  m_up = false;
+  m_val = 255;
+  analogWrite(m_pin, m_val);
 }
 
 void Light::off() {
-  digitalWrite(m_pin, LOW);
+  m_up = true;
+  m_val = 0;
+  analogWrite(m_pin, m_val);
 }
 
 void Light::pulseStep() {
