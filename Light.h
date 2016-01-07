@@ -9,15 +9,15 @@
 
 class Light {
   public:
-    Light(int pin);
+    Light(short pin);
     ~Light();
     void on();
     void off();
     void pulseStep();
     
   private:
-    int m_val = 0;
-    int m_pin;
+    short m_val = 0;
+    short m_pin;
     boolean m_up = true;
 };
 

@@ -9,14 +9,14 @@
 
 class Poti {
   public:
-    Poti(int pin, double min, double max);
+    Poti(short pin, short min, short max);
     ~Poti();
-    double GetValue();
+    short GetValue();
 
   private:
-    double m_pin;
-    double m_min;
-    double m_max;
+    short m_pin;
+    short m_min;
+    short m_max;
 
 };
 

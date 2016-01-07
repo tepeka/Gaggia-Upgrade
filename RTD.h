@@ -14,12 +14,12 @@
 
 class RTD {
   public:
-    RTD(int pin);
+    RTD(short pin);
     ~RTD();
-    int readTemp();
+    short readTemp();
     
   private:
-    int m_currentTemp; 
+    short m_currentTemp; 
     PWFusion_MAX31865_RTD* m_rtd;
 
 };

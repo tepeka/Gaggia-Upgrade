@@ -1,6 +1,6 @@
 #include "Poti.h"
 
-Poti::Poti(int pin, double min, double max) {
+Poti::Poti(short pin, short min, short max) {
   m_pin = pin;
   m_min = min;
   m_max = max;
@@ -13,7 +13,7 @@ Poti::Poti(int pin, double min, double max) {
 Poti::~Poti() { }
 
 
-double Poti::GetValue()
+short Poti::GetValue()
 {
   int sensorValue = analogRead(m_pin); // 0..1023
   double scale = sensorValue / 1023.0;
