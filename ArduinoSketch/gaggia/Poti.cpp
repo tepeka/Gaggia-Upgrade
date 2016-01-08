@@ -15,7 +15,7 @@ Poti::~Poti() { }
 
 short Poti::GetValue()
 {
-  int sensorValue = analogRead(m_pin); // 0..1023
+  short sensorValue = analogRead(m_pin); // 0..1023
   double scale = sensorValue / 1023.0;
   return m_min + (m_max - m_min) * scale;
 }

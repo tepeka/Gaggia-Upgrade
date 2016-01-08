@@ -47,13 +47,13 @@ bool led_on = true;
 bool led_pulse = true;
 
 // -- pid
-const short SETPOINT_MIN = 95; // °C
-const short SETPOINT_MAX = 125; // °C
+const short SETPOINT_MIN = 100; // °C
+const short SETPOINT_MAX = 120; // °C
 const short SETPOINT_INIT = 110; // °C
-const short WINDOW_SIZE = 2000;
-const short P = 270;
-const short I = 30;
-const short D = 10;
+const short WINDOW_SIZE = 1000;
+const short P = 90;
+const short I = 90;
+const short D = 0;
 GaggiaPID pid(SETPOINT_INIT, P, I, D, WINDOW_SIZE);
 
 // -- poti
@@ -140,15 +140,15 @@ void doCalcPid() {
 }
 
 void doSendHttp() {
-  if (Serial.available()) {
+  //if (Serial.available()) {
     short setpoint = poti.GetValue();
-    Serial.print(F("msg0,"));
+    // Serial.print(F("msg0,"));
     Serial.print(tempMemAvg);
     Serial.print(F(","));
     Serial.print(setpoint);
-    Serial.print(F(","));
-    Serial.print(tempMemAvg - setpoint);
+    //Serial.print(F(","));
+    //Serial.print(tempMemAvg - setpoint);
     Serial.println();
-  }
+  //}
 }
 

@@ -10,9 +10,9 @@ GaggiaPID::GaggiaPID(short setpoint, short p, short i, short d, short windowSize
   m_d = d;
   m_pid = new PID(&m_input, &m_output, &m_setpoint, p, i, d, DIRECT);
   m_pid->SetOutputLimits(0, m_windowSize);
-  m_pid->SetSampleTime(100);
+  m_pid->SetSampleTime(500);
   m_pid->SetMode(AUTOMATIC);
-  m_pid->SetControllerDirection(REVERSE);
+  //m_pid->SetControllerDirection(REVERSE);
   m_windowStartTime = millis();
 }
 
@@ -39,7 +39,7 @@ bool GaggiaPID::Calculate(short temperature) {
   {
     m_windowStartTime += m_windowSize;
   }
-  if (m_output < millis() - m_windowStartTime) {
+  if (m_output > millis() - m_windowStartTime) {
     return true;
   } else {
     return false;

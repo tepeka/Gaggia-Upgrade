@@ -68,7 +68,7 @@ static const unsigned char PROGMEM GAGGIA_PIC [] = {
 const short LED_HANDLING_INTERVAL = 20;
 const short TEMP_READ_INTERVAL = 50;
 const short PID_CALC_INTERVAL = 1;
-const short SEND_HTTP_INTERVAL = 2000;
+const short SEND_HTTP_INTERVAL = 750;
 
 unsigned long lastLedHandling = 0;
 unsigned long lastTempRead = 0;

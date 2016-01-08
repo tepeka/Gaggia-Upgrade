@@ -56,7 +56,7 @@ bool PID::Compute()
       short error = *mySetpoint - input;
       ITerm+= (ki * error);
       if(ITerm > outMax) ITerm= outMax;
-      else if(ITerm < outMin) ITerm= outMin;
+      else if(ITerm < -outMax) ITerm= -outMax;
       short dInput = (input - lastInput);
  
       /*Compute PID Output*/
