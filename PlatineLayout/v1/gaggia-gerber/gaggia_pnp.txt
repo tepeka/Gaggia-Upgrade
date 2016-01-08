@@ -1,0 +1,36 @@
+*Pick And Place List
+*Company=
+*Author=
+*eMail=
+*
+*Project=gaggia
+*Date=22:36:17
+*CreatedBy=Fritzing 0.9.2b.11.19.8d2d5970658f0bed09c661c9ea9a515b5f40f44c
+*
+*
+*Coordinates in mm, always center of component
+*Origin 0/0=Lower left corner of PCB
+*Rotation in degree (0-360, math. pos.)
+*
+*No;Value;Package;X;Y;Rotation;Side;Name
+1;;;48.2278;-39.4359;0;Bottom;TXT2
+2;;THT;69.4501;-2.80553;90;Bottom;12V
+3;;THT;36.4301;-2.80553;90;Bottom;RELAY
+4;;THT;26.2701;-2.80553;90;Bottom;LED2
+5;;;55.8437;-13.5959;0;Bottom;IMG1
+6;;;26.8003;-13.4735;0;Bottom;Hole2
+7;;THT;52.2901;-2.80551;90;Bottom;OLED
+8;;;15.1931;-38.8734;0;Bottom;Via1
+9;;;68.533;-41.4134;0;Bottom;Hole3
+10;;TO92 [THT];20.4637;-21.1823;180;Bottom;T1
+11;;;17.7331;-36.3334;0;Bottom;Via3
+12;;THT;15.1932;-41.4134;-90;Bottom;RTD
+13;;THT;18.6501;-2.80553;90;Bottom;LED1
+14;;;25.3624;-38.9;0;Bottom;Via2
+15;;THT;6.74004;-2.80532;90;Bottom;Poti
+16;;TO92 [THT];35.7037;-16.1023;180;Bottom;T2
+17;;;25.3531;-36.3334;0;Bottom;Via4
+18;;;46.0635;-42.8768;0;Bottom;TXT3
+19;;;3.67612;-13.4735;0;Bottom;Hole1
+20;;;40.577;-8.38449;0;Bottom;Via5
+21;;;50.7617;-28.7135;-90;Bottom;Nano
