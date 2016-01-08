@@ -32,7 +32,7 @@
 // -- rtd & temp
 const short INVALID_TEMP = -274; // °C
 const short TEMP_MEM_SIZE = 10;
-const short TEMP_THRESHOLD = 0; // °C
+const short TEMP_THRESHOLD = 1; // °C
 RTD rtd(RTD_SS_PIN);
 short tempMem[TEMP_MEM_SIZE];
 short tempMemIdx = 0;
@@ -46,13 +46,13 @@ bool led_on = true;
 bool led_pulse = true;
 
 // -- pid
-const int SETPOINT_MIN = 95; // °C
-const int SETPOINT_MAX = 125; // °C
-const int SETPOINT_INIT = 110; // °C
-const int WINDOW_SIZE = 2000;
-const int P = 30;
-const int I = 10;
-const int D = 10;
+const short SETPOINT_MIN = 95; // °C
+const short SETPOINT_MAX = 125; // °C
+const short SETPOINT_INIT = 110; // °C
+const short WINDOW_SIZE = 2000;
+const short P = 270;
+const short I = 30;
+const short D = 10;
 GaggiaPID pid(SETPOINT_INIT, P, I, D, WINDOW_SIZE);
 
 // -- poti
@@ -131,6 +131,8 @@ void doCalcPid() {
   } else {
     display.println(F("Heater:      off"));
   }
+  display.print(F("Output:      "));
+  display.println(String(pid.GetOutput()));
   display.print(F("Mem:         "));
   display.println(String(freeMemory()));
   display.display();

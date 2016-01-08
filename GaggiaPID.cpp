@@ -28,6 +28,10 @@ short GaggiaPID::GetSetpoint() {
   return m_setpoint;
 }
 
+short GaggiaPID::GetOutput() {
+  return m_output;
+}
+
 bool GaggiaPID::Calculate(short temperature) {
   m_input = temperature;
   m_pid->Compute();
