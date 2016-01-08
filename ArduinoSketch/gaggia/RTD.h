@@ -9,8 +9,8 @@
 
 #include <SPI.h>
 
-#include "PlayingWithFusion_MAX31865.h"
-#include "PlayingWithFusion_MAX31865_STRUCT.h"
+#include "libs/PlayingWithFusion_MAX31865/PlayingWithFusion_MAX31865.h"
+#include "libs/PlayingWithFusion_MAX31865/PlayingWithFusion_MAX31865_STRUCT.h"
 
 class RTD {
   public:

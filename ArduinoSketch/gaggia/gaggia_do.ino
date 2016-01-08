@@ -1,10 +1,11 @@
-#include <PlayingWithFusion_MAX31865.h>
 #include <SPI.h>
-#include <PID_v1.h>
-#include <Adafruit_GFX.h>
-#include <Adafruit_SSD1306.h>
 #include <Wire.h>
-#include <MemoryFree.h>
+
+#include "libs/Adafruit_GFX/Adafruit_GFX.h"
+#include "libs/Adafruit_SSD1306/Adafruit_SSD1306.h"
+#include "libs/MemoryFree/MemoryFree.h"
+#include "libs/PID_v1/PID_v1.h"
+#include "libs/PlayingWithFusion_MAX31865/PlayingWithFusion_MAX31865.h"
 
 #include "Light.h"
 #include "RTD.h"
