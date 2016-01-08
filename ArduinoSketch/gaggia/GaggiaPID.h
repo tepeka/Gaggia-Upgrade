@@ -7,8 +7,7 @@
 #include "WProgram.h"
 #endif
 
-#include "libs/PID_v1/PID_v1.h"
-
+#include <PID_v1.h>
 
 class GaggiaPID {
   public:
