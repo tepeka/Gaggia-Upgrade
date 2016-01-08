@@ -16,6 +16,7 @@ class GaggiaPID {
     bool Calculate(short temperature);
     void UpdateSetpoint(short setpoint);
     short GetSetpoint();
+    short GetOutput();
     
   private:
     PID* m_pid;
