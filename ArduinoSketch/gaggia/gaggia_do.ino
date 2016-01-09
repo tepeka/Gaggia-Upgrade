@@ -35,26 +35,25 @@ const short INVALID_TEMP = -274; // °C
 const short TEMP_MEM_SIZE = 10;
 const short TEMP_THRESHOLD = 1; // °C
 RTD rtd(RTD_SS_PIN);
-short tempMem[TEMP_MEM_SIZE];
+double tempMem[TEMP_MEM_SIZE];
 short tempMemIdx = 0;
-short tempMemSum = 0;
-short tempMemAvg = 0;
+double tempMemSum = 0;
+double tempMemAvg = 0;
 
 // -- led
 Light light1(LED1_PWM_PIN);
 Light light2(LED2_PWM_PIN);
-bool led_on = true;
-bool led_pulse = true;
 
 // -- pid
 const short SETPOINT_MIN = 100; // °C
 const short SETPOINT_MAX = 120; // °C
 const short SETPOINT_INIT = 110; // °C
-const short WINDOW_SIZE = 1000;
-const short P = 90;
-const short I = 90;
-const short D = 0;
-GaggiaPID pid(SETPOINT_INIT, P, I, D, WINDOW_SIZE);
+const unsigned long SAMPLE_TIME = 500;
+const double WINDOW_SIZE = 1000;
+const double P = 90;
+const double I = 0;
+const double D = 0;
+GaggiaPID pid(SETPOINT_INIT, P, I, D, SAMPLE_TIME, WINDOW_SIZE);
 
 // -- poti
 Poti poti(POTI_ANA_PIN, SETPOINT_MIN, SETPOINT_MAX);
@@ -63,7 +62,7 @@ Poti poti(POTI_ANA_PIN, SETPOINT_MIN, SETPOINT_MAX);
 Adafruit_SSD1306 display(OLED_MOSI, OLED_CLK, OLED_DC, OLED_RESET, OLED_CS);
 
 void doInit() {
-  light1.on();
+  light1.On(100);
   tempMem[0] = INVALID_TEMP;
   pinMode(RELAY_DIG_PIN, OUTPUT);
   display.begin(SSD1306_SWITCHCAPVCC);
@@ -75,20 +74,13 @@ void doInit() {
 }
 
 void doLedHandling() {
-  if (!led_on) {
-    light2.off();
-
-  } else if (led_pulse) {
-    light2.pulseStep();
-
-  } else {
-    light2.on();
-  }
+  light1.HandlePulse();
+  light2.HandlePulse();
 }
 
 void doReadTemp() {
   // -- calc avg temp
-  short temp = rtd.readTemp();
+  double temp = rtd.ReadTemp();
   if (tempMem[0] == INVALID_TEMP) {
     // initialize
     for (short i = 0; i < TEMP_MEM_SIZE; i++) {
@@ -103,16 +95,15 @@ void doReadTemp() {
     tempMemAvg = tempMemSum / TEMP_MEM_SIZE;
   }
   // -- set led state depending on temp
-  if(SETPOINT_MIN == pid.GetSetpoint()) led_pulse = false;
-  else if (tempMemAvg < pid.GetSetpoint() - TEMP_THRESHOLD) led_pulse = true;
-  else if (tempMemAvg > pid.GetSetpoint() + TEMP_THRESHOLD) led_pulse = true;
-  else led_pulse = false;
-  led_on = true;
+  if (SETPOINT_MIN == pid.GetSetpoint()) light2.On(75);
+  else if (tempMemAvg < pid.GetSetpoint() - TEMP_THRESHOLD) light2.PulseOn(75);
+  else if (tempMemAvg > pid.GetSetpoint() + TEMP_THRESHOLD) light2.PulseOn(75);
+  else light2.On(75);
 }
 
 void doCalcPid() {
   short setpoint = poti.GetValue();
-  pid.UpdateSetpoint(setpoint);
+  pid.UpdateSetpoint((double)setpoint);
   bool on = pid.Calculate(tempMemAvg);
   if (on) {
     digitalWrite(RELAY_DIG_PIN, HIGH);
@@ -132,23 +123,19 @@ void doCalcPid() {
   } else {
     display.println(F("Heater:      off"));
   }
-  display.print(F("Output:      "));
-  display.println(String(pid.GetOutput()));
+  display.print(F("Heat:        "));
+  display.println(String(pid.GetHeatPercentage()));
   display.print(F("Mem:         "));
   display.println(String(freeMemory()));
   display.display();
 }
 
-void doSendHttp() {
-  //if (Serial.available()) {
-    short setpoint = poti.GetValue();
-    // Serial.print(F("msg0,"));
-    Serial.print(tempMemAvg);
-    Serial.print(F(","));
-    Serial.print(setpoint);
-    //Serial.print(F(","));
-    //Serial.print(tempMemAvg - setpoint);
-    Serial.println();
-  //}
+void doPlot() {
+  short setpoint = poti.GetValue();
+  // Serial.print(F("msg0,"));
+  Serial.print(String(tempMemAvg));
+  Serial.print(F(","));
+  Serial.print(setpoint);
+  Serial.println();
 }
 

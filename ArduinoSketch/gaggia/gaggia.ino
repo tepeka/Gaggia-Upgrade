@@ -68,12 +68,12 @@ static const unsigned char PROGMEM GAGGIA_PIC [] = {
 const short LED_HANDLING_INTERVAL = 20;
 const short TEMP_READ_INTERVAL = 50;
 const short PID_CALC_INTERVAL = 1;
-const short SEND_HTTP_INTERVAL = 750;
+const short PLOT_INTERVAL = 750;
 
 unsigned long lastLedHandling = 0;
 unsigned long lastTempRead = 0;
 unsigned long lastPidCalc = 0;
-unsigned long lastSendHttp = 0;
+unsigned long lastPlot = 0;
 
 void setup() {
   Serial.begin(9600);
@@ -83,23 +83,23 @@ void setup() {
 void loop() {
   unsigned long now = millis();
   // -- execute led pulse
-  if ((now - lastLedHandling) / LED_HANDLING_INTERVAL >= 1) {
+  if (now - lastLedHandling > LED_HANDLING_INTERVAL) {
     doLedHandling();
-    lastLedHandling = millis();
+    lastLedHandling = now;
   }
   // -- execute read temp
-  if ((now - lastTempRead) / TEMP_READ_INTERVAL >= 1) {
+  if (now - lastTempRead > TEMP_READ_INTERVAL) {
     doReadTemp();
-    lastTempRead = millis();
+    lastTempRead = now;
   }
   // -- execute pid calc
-  if ((now - lastPidCalc) / PID_CALC_INTERVAL >= 1) {
+  if (now - lastPidCalc > PID_CALC_INTERVAL) {
     doCalcPid();
-    lastPidCalc = millis();
+    lastPidCalc = now;
   }
   // -- execute send http
-  if ((now - lastSendHttp) / SEND_HTTP_INTERVAL >= 1) {
-    doSendHttp();
-    lastSendHttp = millis();
+  if (now - lastPlot > PLOT_INTERVAL) {
+    doPlot();
+    lastPlot = now;
   }
 }

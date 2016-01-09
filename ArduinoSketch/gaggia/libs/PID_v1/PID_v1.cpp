@@ -1,5 +1,5 @@
 /**********************************************************************************************
- * Arduino PID Library - Version 1.0.1
+ * Arduino PID Library - Version 1.1.1
  * by Brett Beauregard <br3ttb@gmail.com> brettbeauregard.com
  *
  * This Library is licensed under a GPLv3 License
@@ -17,8 +17,8 @@
  *    The parameters specified here are those for for which we can't set up 
  *    reliable defaults, so we need to have the user set them.
  ***************************************************************************/
-PID::PID(short* Input, short* Output, short* Setpoint,
-        short Kp, short Ki, short Kd, short ControllerDirection)
+PID::PID(double* Input, double* Output, double* Setpoint,
+        double Kp, double Ki, double Kd, int ControllerDirection)
 {
 	
     myOutput = Output;
@@ -52,15 +52,15 @@ bool PID::Compute()
    if(timeChange>=SampleTime)
    {
       /*Compute all the working error variables*/
-	  short input = *myInput;
-      short error = *mySetpoint - input;
+	  double input = *myInput;
+      double error = *mySetpoint - input;
       ITerm+= (ki * error);
       if(ITerm > outMax) ITerm= outMax;
-      else if(ITerm < -outMax) ITerm= -outMax;
-      short dInput = (input - lastInput);
+      else if(ITerm < outMin) ITerm= outMin;
+      double dInput = (input - lastInput);
  
       /*Compute PID Output*/
-      short output = kp * error + ITerm- kd * dInput;
+      double output = kp * error + ITerm- kd * dInput;
       
 	  if(output > outMax) output = outMax;
       else if(output < outMin) output = outMin;
@@ -80,13 +80,13 @@ bool PID::Compute()
  * it's called automatically from the constructor, but tunings can also
  * be adjusted on the fly during normal operation
  ******************************************************************************/ 
-void PID::SetTunings(short Kp, short Ki, short Kd)
+void PID::SetTunings(double Kp, double Ki, double Kd)
 {
    if (Kp<0 || Ki<0 || Kd<0) return;
  
    dispKp = Kp; dispKi = Ki; dispKd = Kd;
    
-   short SampleTimeInSec = ((short)SampleTime)/1000;  
+   double SampleTimeInSec = ((double)SampleTime)/1000;  
    kp = Kp;
    ki = Ki * SampleTimeInSec;
    kd = Kd / SampleTimeInSec;
@@ -102,12 +102,12 @@ void PID::SetTunings(short Kp, short Ki, short Kd)
 /* SetSampleTime(...) *********************************************************
  * sets the period, in Milliseconds, at which the calculation is performed	
  ******************************************************************************/
-void PID::SetSampleTime(short NewSampleTime)
+void PID::SetSampleTime(int NewSampleTime)
 {
    if (NewSampleTime > 0)
    {
-      short ratio  = (short)NewSampleTime
-                      / (short)SampleTime;
+      double ratio  = (double)NewSampleTime
+                      / (double)SampleTime;
       ki *= ratio;
       kd /= ratio;
       SampleTime = (unsigned long)NewSampleTime;
@@ -122,7 +122,7 @@ void PID::SetSampleTime(short NewSampleTime)
  *  want to clamp it from 0-125.  who knows.  at any rate, that can all be done
  *  here.
  **************************************************************************/
-void PID::SetOutputLimits(short Min, short Max)
+void PID::SetOutputLimits(double Min, double Max)
 {
    if(Min >= Max) return;
    outMin = Min;
@@ -143,7 +143,7 @@ void PID::SetOutputLimits(short Min, short Max)
  * when the transition from manual to auto occurs, the controller is
  * automatically initialized
  ******************************************************************************/ 
-void PID::SetMode(short Mode)
+void PID::SetMode(int Mode)
 {
     bool newAuto = (Mode == AUTOMATIC);
     if(newAuto == !inAuto)
@@ -171,7 +171,7 @@ void PID::Initialize()
  * know which one, because otherwise we may increase the output when we should
  * be decreasing.  This is called from the constructor.
  ******************************************************************************/
-void PID::SetControllerDirection(short Direction)
+void PID::SetControllerDirection(int Direction)
 {
    if(inAuto && Direction !=controllerDirection)
    {
@@ -187,9 +187,9 @@ void PID::SetControllerDirection(short Direction)
  * functions query the internal state of the PID.  they're here for display 
  * purposes.  this are the functions the PID Front-end uses for example
  ******************************************************************************/
-short PID::GetKp(){ return  dispKp; }
-short PID::GetKi(){ return  dispKi;}
-short PID::GetKd(){ return  dispKd;}
-short PID::GetMode(){ return  inAuto ? AUTOMATIC : MANUAL;}
-short PID::GetDirection(){ return controllerDirection;}
+double PID::GetKp(){ return  dispKp; }
+double PID::GetKi(){ return  dispKi;}
+double PID::GetKd(){ return  dispKd;}
+int PID::GetMode(){ return  inAuto ? AUTOMATIC : MANUAL;}
+int PID::GetDirection(){ return controllerDirection;}
 

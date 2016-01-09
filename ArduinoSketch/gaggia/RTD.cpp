@@ -16,7 +16,7 @@ RTD::~RTD() {
 }
 
 
-short RTD::readTemp()
+double RTD::ReadTemp()
 {
   bool error = false;
 

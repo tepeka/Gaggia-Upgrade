@@ -2,7 +2,7 @@
 
 
 
-GaggiaPID::GaggiaPID(short setpoint, short p, short i, short d, short windowSize) {
+GaggiaPID::GaggiaPID(double setpoint, double p, double i, double d, unsigned long sampleTime, double windowSize) {
   m_setpoint = setpoint;
   m_windowSize = windowSize;
   m_p = p;
@@ -10,9 +10,8 @@ GaggiaPID::GaggiaPID(short setpoint, short p, short i, short d, short windowSize
   m_d = d;
   m_pid = new PID(&m_input, &m_output, &m_setpoint, p, i, d, DIRECT);
   m_pid->SetOutputLimits(0, m_windowSize);
-  m_pid->SetSampleTime(500);
+  m_pid->SetSampleTime(sampleTime);
   m_pid->SetMode(AUTOMATIC);
-  //m_pid->SetControllerDirection(REVERSE);
   m_windowStartTime = millis();
 }
 
@@ -20,26 +19,32 @@ GaggiaPID::~GaggiaPID() {
   delete m_pid;
 }
 
-void GaggiaPID::UpdateSetpoint(short setpoint) {
+void GaggiaPID::UpdateSetpoint(double setpoint) {
   m_setpoint = setpoint;
 }
 
-short GaggiaPID::GetSetpoint() {
+double GaggiaPID::GetSetpoint() {
   return m_setpoint;
 }
 
-short GaggiaPID::GetOutput() {
-  return m_output;
+double GaggiaPID::GetHeatPercentage() {
+  return 100 * m_output / m_windowSize;
 }
 
-bool GaggiaPID::Calculate(short temperature) {
+bool GaggiaPID::Calculate(double temperature) {
+  // set input and compute
   m_input = temperature;
   m_pid->Compute();
-  if (millis() - m_windowStartTime > m_windowSize)
+  // calculate current window time
+  unsigned long now = millis();
+  short windowTime = now - m_windowStartTime;
+  if (windowTime > m_windowSize)
   {
-    m_windowStartTime += m_windowSize;
+    m_windowStartTime = now;
+    windowTime = 0;
   }
-  if (m_output > millis() - m_windowStartTime) {
+  // return on/off based on current window time and output time ("on" time)
+  if (windowTime <= m_output) {
     return true;
   } else {
     return false;
