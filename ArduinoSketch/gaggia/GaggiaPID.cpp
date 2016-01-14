@@ -44,7 +44,7 @@ bool GaggiaPID::Calculate(double temperature) {
     windowTime = 0;
   }
   // return on/off based on current window time and output time ("on" time)
-  if (windowTime <= m_output) {
+  if (windowTime < m_output) {
     return true;
   } else {
     return false;

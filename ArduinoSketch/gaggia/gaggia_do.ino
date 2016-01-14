@@ -50,9 +50,9 @@ const short SETPOINT_MAX = 120; // °C
 const short SETPOINT_INIT = 110; // °C
 const unsigned long SAMPLE_TIME = 500;
 const double WINDOW_SIZE = 1000;
-const double P = 90;
-const double I = 0;
-const double D = 0;
+const double P = 110;
+const double I = 0.1;
+const double D = 90;
 GaggiaPID pid(SETPOINT_INIT, P, I, D, SAMPLE_TIME, WINDOW_SIZE);
 
 // -- poti
@@ -118,13 +118,9 @@ void doCalcPid() {
   display.println(String(tempMemAvg));
   display.print(F("Setpoint:    "));
   display.println(String(setpoint));
-  if (on) {
-    display.println(F("Heater:      on"));
-  } else {
-    display.println(F("Heater:      off"));
-  }
   display.print(F("Heat:        "));
-  display.println(String(pid.GetHeatPercentage()));
+  display.print(String(pid.GetHeatPercentage()));
+  display.println("%");
   display.print(F("Mem:         "));
   display.println(String(freeMemory()));
   display.display();
