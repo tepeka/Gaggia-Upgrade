@@ -50,9 +50,9 @@ const short SETPOINT_MAX = 120; // °C
 const short SETPOINT_INIT = 110; // °C
 const unsigned long SAMPLE_TIME = 500;
 const double WINDOW_SIZE = 1000;
-const double P = 110;
-const double I = 0.1;
-const double D = 90;
+const double P = 60;
+const double I = 1.2;
+const double D = 10;
 GaggiaPID pid(SETPOINT_INIT, P, I, D, SAMPLE_TIME, WINDOW_SIZE);
 
 // -- poti
@@ -132,6 +132,10 @@ void doPlot() {
   Serial.print(String(tempMemAvg));
   Serial.print(F(","));
   Serial.print(setpoint);
+  Serial.print(F(","));
+  Serial.print(setpoint + TEMP_THRESHOLD);
+  Serial.print(F(","));
+  Serial.print(setpoint - TEMP_THRESHOLD);
   Serial.println();
 }
 
